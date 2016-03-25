@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:ap="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.ricardo.plotxy.Main3Activity">
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/dynamicXYPlot"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        androidplot.renderMode="use_background_thread"
+        ap:label="A Dynamic XY Plot"
+        ap:domainLabel="Domain"
+        ap:rangeLabel="Range"
+        ap:legendTextSize="15sp"
+        ap:legendIconHeight="15dp"
+        ap:legendIconWidth="15dp"
+        ap:legendHeight="25dp"
+        ap:legendAnchorPosition="right_bottom"/>
+
+</RelativeLayout>
