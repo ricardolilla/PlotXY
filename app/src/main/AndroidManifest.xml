@@ -32,15 +32,18 @@
 
         <activity android:name=".Main3Activity" />
         <activity android:name=".SpeechActivity" />
-        <activity android:name=".CheckActivity"
-                  android:screenOrientation="nosensor"
-                  android:alwaysRetainTaskState="true">
-
-        </activity>
+        <activity
+            android:name=".CheckActivity"
+            android:alwaysRetainTaskState="true"
+            android:screenOrientation="nosensor"></activity>
 
         <uses-permission android:name="android.permission.NFC" />
-        <uses-feature android:name="android.hardware.nfc" android:required="true" />
 
+        <uses-feature
+            android:name="android.hardware.nfc"
+            android:required="true" />
+
+        <activity android:name=".TabActivity"></activity>
     </application>
 
 </manifest>

@@ -29,20 +29,22 @@ public class CheckActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check);
-
+        buttonConectar=(Button) findViewById(R.id.buttonConectar);
         nfcAdapter=NfcAdapter.getDefaultAdapter(this);
         nfcPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, this.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         if(nfcAdapter==null){
             Toast.makeText(this,"Não existe NFC no aparelho!",Toast.LENGTH_SHORT).show();
+            buttonConectar.setEnabled(true);
         }else{
             Toast.makeText(this,"Existe NFC no aparelho!",Toast.LENGTH_SHORT).show();
+            buttonConectar.setEnabled(false);
         }
 
         swIndustria=(Switch) findViewById(R.id.swInd4);
         swService=(Switch) findViewById(R.id.swService);
         swHidraulica=(Switch) findViewById(R.id.swHidraulica);
-        buttonConectar=(Button) findViewById(R.id.buttonConectar);
+
         buttonConectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,7 +88,6 @@ public class CheckActivity extends AppCompatActivity {
                     .getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage[] msgs;
             if (rawMsgs != null) {
-                Log.d("TESTE","NAO NULA");
                 msgs = new NdefMessage[rawMsgs.length];
                 for (int i = 0; i < rawMsgs.length; i++) {
                     msgs[i] = (NdefMessage) rawMsgs[i];
@@ -97,8 +98,11 @@ public class CheckActivity extends AppCompatActivity {
                 byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
                 Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 if (getDec(id)==585767634){
-                    Intent tela2=new Intent(CheckActivity.this,Main2Activity.class);
-                    startActivity(tela2);
+                    Intent telaInicial=new Intent(CheckActivity.this,TabActivity.class);
+                    telaInicial.putExtra("IND",swIndustria.isChecked());
+                    telaInicial.putExtra("SERV",swService.isChecked());
+                    telaInicial.putExtra("HID",swHidraulica.isChecked());
+                    startActivity(telaInicial);
                 }
             }
         }
