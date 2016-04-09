@@ -21,6 +21,7 @@ import com.androidplot.util.PlotStatistics;
 import com.androidplot.xy.BarFormatter;
 import com.androidplot.xy.BarRenderer;
 import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.CatmullRomInterpolator;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
@@ -128,6 +129,11 @@ public class Main2Activity extends AppCompatActivity implements SensorEventListe
     private SimpleXYSeries pitchHistorySeries = null;
     private SimpleXYSeries rollHistorySeries = null;
     private SimpleXYSeries pressHistorySeries = null;
+    private SimpleXYSeries tempHistorySeries = null;
+    private double pressao;
+    private double temperatura;
+    GeraNumero var;
+    Thread tt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +142,9 @@ public class Main2Activity extends AppCompatActivity implements SensorEventListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        var=new GeraNumero();
+        tt=new Thread(var);
+        tt.start();
 
         // setup the APR History plot:
         aprHistoryPlot = (XYPlot) findViewById(R.id.aprHistoryPlot);
@@ -148,8 +157,10 @@ public class Main2Activity extends AppCompatActivity implements SensorEventListe
         rollHistorySeries.useImplicitXVals();
         pressHistorySeries = new SimpleXYSeries("Pressão");
         pressHistorySeries.useImplicitXVals();
+        tempHistorySeries = new SimpleXYSeries("Temperatura");
+        tempHistorySeries.useImplicitXVals();
 
-        aprHistoryPlot.setRangeBoundaries(0, 100, BoundaryMode.FIXED);
+        aprHistoryPlot.setRangeBoundaries(0, 250, BoundaryMode.FIXED);
         aprHistoryPlot.setDomainBoundaries(0, 5, BoundaryMode.FIXED);
         LineAndPointFormatter linAzi=new LineAndPointFormatter(Color.rgb(100,100,200),Color.BLACK,null,null);
         aprHistoryPlot.addSeries(azimuthHistorySeries, linAzi);
@@ -157,8 +168,15 @@ public class Main2Activity extends AppCompatActivity implements SensorEventListe
         aprHistoryPlot.addSeries(pitchHistorySeries, linPitch);
         LineAndPointFormatter linRoll=new LineAndPointFormatter(Color.rgb(100,100,200),null,null,null);
         aprHistoryPlot.addSeries(rollHistorySeries, linRoll);
-        LineAndPointFormatter linPressao=new LineAndPointFormatter(Color.BLACK,null,null,null);
+
+        LineAndPointFormatter linPressao=new LineAndPointFormatter(Color.YELLOW,null,null,null);
+        linPressao.setInterpolationParams(new CatmullRomInterpolator.Params(10, CatmullRomInterpolator.Type.Centripetal));
         aprHistoryPlot.addSeries(pressHistorySeries, linPressao);
+
+        LineAndPointFormatter linTemp=new LineAndPointFormatter(Color.WHITE,null,null,null);
+        linTemp.setInterpolationParams(new CatmullRomInterpolator.Params(10, CatmullRomInterpolator.Type.Uniform));
+        aprHistoryPlot.addSeries(tempHistorySeries, linTemp);
+
         aprHistoryPlot.setDomainStepValue(5);
         aprHistoryPlot.setTicksPerRangeLabel(3);
         aprHistoryPlot.setDomainLabel("Sample Index");
@@ -210,14 +228,12 @@ public class Main2Activity extends AppCompatActivity implements SensorEventListe
             rollHistorySeries.removeFirst();
             pitchHistorySeries.removeFirst();
             azimuthHistorySeries.removeFirst();
-            pressHistorySeries.removeFirst();
         }
 
         // add the latest history sample:
         azimuthHistorySeries.addLast(null, event.values[0]);
         pitchHistorySeries.addLast(null, event.values[1]);
         rollHistorySeries.addLast(null, event.values[2]);
-        pressHistorySeries.addLast(null,0);
         // redraw the Plots:
         aprHistoryPlot.redraw();
     }
@@ -226,5 +242,28 @@ public class Main2Activity extends AppCompatActivity implements SensorEventListe
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+    class GeraNumero implements Runnable{
+
+        @Override
+        public void run() {
+            while(true){
+                try{
+                    Thread.sleep(100);
+                }catch(InterruptedException ex){
+                    ex.printStackTrace();
+                }
+                pressao=Math.random() * 250;
+                temperatura=Math.random() * 100;
+                if (rollHistorySeries.size() > HISTORY_SIZE) {
+                    pressHistorySeries.removeFirst();
+                    tempHistorySeries.removeFirst();
+                }
+                pressHistorySeries.addLast(null,pressao);
+                tempHistorySeries.addLast(null,temperatura);
+                aprHistoryPlot.redraw();
+            }
+
+        }
     }
 }
